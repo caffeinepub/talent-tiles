@@ -1,14 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   BarChart2,
   LayoutGrid,
-  LogOut,
   MapPin,
   SearchX,
   SlidersHorizontal,
@@ -17,7 +10,9 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { Type, Type__1 } from "../backend";
+import { CreatorDashboardPanel } from "../components/CreatorDashboardPanel";
 import { CreatorTile, CreatorTileSkeleton } from "../components/CreatorTile";
+import { UserProfilePanel } from "../components/UserProfilePanel";
 import { useAuth } from "../context/AuthContext";
 import type { ExtendedCreatorProfile } from "../data/sampleCreators";
 import { sampleCreators } from "../data/sampleCreators";
@@ -67,34 +62,34 @@ function GridLogoIcon() {
   );
 }
 
-export default function DashboardPage() {
+interface DashboardPageProps {
+  onViewCreator: (id: bigint) => void;
+}
+
+export default function DashboardPage({ onViewCreator }: DashboardPageProps) {
   const { logout, username } = useAuth();
 
   const [distanceFilter, setDistanceFilter] = useState<DistanceFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
+  const [dashboardOpen, setDashboardOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const { data: backendCreators, isLoading } = useGetAllCreators();
 
-  // Merge backend creators with sample data (backend takes precedence when available)
+  // Merge backend creators with sample data (sample display fields always take precedence)
   const allCreators: ExtendedCreatorProfile[] = useMemo(() => {
     if (backendCreators && backendCreators.length > 0) {
-      // Map backend profiles to ExtendedCreatorProfile with sensible defaults
+      // Spread sample first so name/avatar/visual fields are never overwritten by backend
       return backendCreators.map((c, i) => {
         const sample =
           sampleCreators.find((s) => s.id === c.id) ??
           sampleCreators[i % sampleCreators.length];
         return {
-          ...c,
-          neighborhood: sample?.neighborhood ?? "Local Area",
-          kmDistance: sample?.kmDistance ?? "nearby",
-          views: sample?.views ?? 0,
-          bookmarks: sample?.bookmarks ?? 0,
-          photoUrl:
-            sample?.photoUrl ??
-            `https://picsum.photos/seed/${c.id.toString()}/600/400`,
-          statusBadge: sample?.statusBadge,
-          isTrending: sample?.isTrending,
-          title: sample?.title,
+          ...sample,
+          id: c.id,
+          category: c.category,
+          distanceLabel: c.distanceLabel,
+          bio: c.bio || sample.bio,
         };
       });
     }
@@ -119,7 +114,14 @@ export default function DashboardPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo + title */}
           <div className="flex items-center gap-3">
-            <GridLogoIcon />
+            <button
+              type="button"
+              aria-label="Open creator dashboard"
+              onClick={() => setDashboardOpen(true)}
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg transition-transform hover:scale-105 active:scale-95"
+            >
+              <GridLogoIcon />
+            </button>
             <div className="flex flex-col">
               <span className="font-display font-bold text-base leading-tight tracking-tight text-foreground">
                 Talent Tiles
@@ -145,35 +147,21 @@ export default function DashboardPage() {
             <button
               type="button"
               aria-label="Analytics"
+              onClick={() => setDashboardOpen(true)}
               className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
             >
               <BarChart2 className="w-4.5 h-4.5" />
             </button>
 
             {/* Profile */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  aria-label="Profile menu"
-                  className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
-                >
-                  <User className="w-4.5 h-4.5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-52">
-                <div className="px-2 py-1.5 text-xs text-muted-foreground truncate border-b border-border mb-1">
-                  {username ?? "User"}
-                </div>
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <button
+              type="button"
+              aria-label="Open user profile"
+              onClick={() => setProfileOpen(true)}
+              className="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            >
+              <User className="w-4.5 h-4.5" />
+            </button>
           </div>
         </div>
       </header>
@@ -305,6 +293,7 @@ export default function DashboardPage() {
                     key={creator.id.toString()}
                     creator={creator}
                     index={i}
+                    onView={onViewCreator}
                   />
                 ))}
               </motion.div>
@@ -329,6 +318,22 @@ export default function DashboardPage() {
           </p>
         </div>
       </footer>
+
+      {/* ── Creator Dashboard Panel ───────────────────────────── */}
+      <CreatorDashboardPanel
+        username={username ?? "Creator"}
+        isOpen={dashboardOpen}
+        onClose={() => setDashboardOpen(false)}
+      />
+
+      {/* ── User Profile Panel ────────────────────────────────── */}
+      <UserProfilePanel
+        username={username}
+        isOpen={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        onLogout={logout}
+        onViewCreator={onViewCreator}
+      />
     </div>
   );
 }

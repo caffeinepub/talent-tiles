@@ -12,7 +12,6 @@ import Time "mo:core/Time";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -41,7 +40,7 @@ actor {
         case (#crafts, #crafts) { #equal };
         case (#music, #wellness) { #less };
         case (#music, #music) { #equal };
-        case (#wellness, #wellness) { #equal };
+        case (_, _) { #greater };
       };
     };
   };
@@ -57,6 +56,7 @@ actor {
         case (#neighborhood, #neighborhood) { #equal };
         case (#neighborhood, #cityWide) { #less };
         case (#cityWide, #cityWide) { #equal };
+        case (_, _) { #greater };
       };
     };
   };
@@ -103,132 +103,132 @@ actor {
         1,
         {
           id = 1;
-          name = "Emily's Art Studio";
+          name = "Aditya Kashyap";
           category = #art;
-          distanceLabel = #cityWide;
-          bio = "Professional artist offering classes and custom paintings.";
-          avatarUrl = "https://cdn.example/sat1s1.jpg";
+          distanceLabel = #hyperlocal;
+          bio = "Mixed-media muralist transforming city walls into living narratives.";
+          avatarUrl = "";
         },
       ),
       (
         2,
         {
           id = 2;
-          name = "Gourmet Bites Food Truck";
-          category = #food;
-          distanceLabel = #cityWide;
-          bio = "Delicious street food using local ingredients.";
-          avatarUrl = "https://cdn.example/sat1s2.jpg";
+          name = "Kriti Kapoor";
+          category = #music;
+          distanceLabel = #neighborhood;
+          bio = "Indie-folk singer-songwriter blending Hindustani classical roots with contemporary pop.";
+          avatarUrl = "";
         },
       ),
       (
         3,
         {
           id = 3;
-          name = "Urban Seamstress";
-          category = #fashion;
-          distanceLabel = #neighborhood;
-          bio = "Custom clothing design and alterations.";
-          avatarUrl = "https://cdn.example/sat1s3.jpg";
+          name = "Kaira Singh";
+          category = #food;
+          distanceLabel = #hyperlocal;
+          bio = "Artisan baker and fermentation enthusiast crafting sourdough and traditional Indian pickles.";
+          avatarUrl = "";
         },
       ),
       (
         4,
         {
           id = 4;
-          name = "Crafty Corner";
-          category = #crafts;
-          distanceLabel = #hyperlocal;
-          bio = "Handmade jewelry and pottery studio.";
-          avatarUrl = "https://cdn.example/sat1s4.jpg";
+          name = "Riya Mehta";
+          category = #fashion;
+          distanceLabel = #cityWide;
+          bio = "Sustainable fashion designer upcycling vintage textiles into indo-western pieces.";
+          avatarUrl = "";
         },
       ),
       (
         5,
         {
           id = 5;
-          name = "Wellness Waves Yoga";
-          category = #wellness;
+          name = "Arjun Verma";
+          category = #crafts;
           distanceLabel = #neighborhood;
-          bio = "Online and in-person yoga classes for all levels.";
-          avatarUrl = "https://cdn.example/sat1s5.jpg";
+          bio = "Third-generation woodworker crafting heirloom furniture using hand tools.";
+          avatarUrl = "";
         },
       ),
       (
         6,
         {
           id = 6;
-          name = "Guitar Guru";
-          category = #music;
-          distanceLabel = #cityWide;
-          bio = "Virtual and in-home guitar lessons for kids and adults.";
-          avatarUrl = "https://cdn.example/sat1s6.jpg";
+          name = "Priya Sharma";
+          category = #wellness;
+          distanceLabel = #hyperlocal;
+          bio = "Yoga instructor and breathwork facilitator.";
+          avatarUrl = "";
         },
       ),
       (
         7,
         {
           id = 7;
-          name = "Abstract Visions";
+          name = "Vivaan Chopra";
           category = #art;
-          distanceLabel = #neighborhood;
-          bio = "Digital artist specializing in mixed media works.";
-          avatarUrl = "https://cdn.example/sat1s7.jpg";
+          distanceLabel = #cityWide;
+          bio = "Digital sculptor building large-scale public installations from recycled electronics.";
+          avatarUrl = "";
         },
       ),
       (
         8,
         {
           id = 8;
-          name = "Sweet Treats Bakery";
-          category = #food;
-          distanceLabel = #hyperlocal;
-          bio = "Custom cakes and pastries for events and special occasions.";
-          avatarUrl = "https://cdn.example/sat1s8.jpg";
+          name = "Ananya Bose";
+          category = #music;
+          distanceLabel = #cityWide;
+          bio = "Electronic producer and DJ weaving classical Indian ragas with deep house beats.";
+          avatarUrl = "";
         },
       ),
       (
         9,
         {
           id = 9;
-          name = "Men's Fashion Loft";
-          category = #fashion;
-          distanceLabel = #cityWide;
-          bio = "Bespoke tailoring and personal styling services.";
-          avatarUrl = "https://cdn.example/sat1s9.jpg";
+          name = "Ishaan Malhotra";
+          category = #food;
+          distanceLabel = #neighborhood;
+          bio = "Modern Indian fusion chef running intimate 8-seat supper clubs.";
+          avatarUrl = "";
         },
       ),
       (
         10,
         {
           id = 10;
-          name = "Papercraft Studio";
+          name = "Tara Joshi";
           category = #crafts;
-          distanceLabel = #neighborhood;
-          bio = "Workshops for card making, origami, and scrapbookers.";
-          avatarUrl = "https://cdn.example/sat1s10.jpg";
+          distanceLabel = #hyperlocal;
+          bio = "Botanical ceramicist pressing wildflowers into hand-thrown terracotta vessels.";
+          avatarUrl = "";
         },
       ),
       (
         11,
         {
           id = 11;
-          name = "Zumba with Jenny";
+          name = "Rohan Patel";
           category = #wellness;
-          distanceLabel = #hyperlocal;
-          bio = "Dance fitness classes for adults and kids.";
-          avatarUrl = "https://cdn.example/sat1s11.jpg";
+          distanceLabel = #neighborhood;
+          bio = "Ayurvedic wellness coach and movement therapist.";
+          avatarUrl = "";
         },
       ),
       (
         12,
         {
           id = 12;
-          name = "Soulful Strings";
-          category = #music;
-          distanceLabel = #neighborhood;
-          bio = "Classical violinist available for events and lessons.";
-          avatarUrl = "https://cdn.example/sat1s12.jpg";
+          name = "Meera Nair";
+          category = #fashion;
+          distanceLabel = #hyperlocal;
+          bio = "Textile artist hand-printing fabrics with natural plant dyes inspired by Kerala's heritage.";
+          avatarUrl = "";
         },
       ),
     ].values(),
