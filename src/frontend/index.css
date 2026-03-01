@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Fonts ─────────────────────────────────────────────── */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque[opsz,wdth,wght].woff2")
+    format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/assets/fonts/GeneralSans-Variable.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    /* ── Radius ──────────────────────────────────────────── */
+    --radius: 0.75rem;
+
+    /* ── Core semantic tokens (raw L C H values) ─────────── */
+    /* Clean light background */
+    --background: 0.98 0.005 280;
+    --foreground: 0.18 0.018 280;
+
+    /* Cards: pure white */
+    --card: 1 0 0;
+    --card-foreground: 0.18 0.018 280;
+
+    /* Popover */
+    --popover: 1 0 0;
+    --popover-foreground: 0.18 0.018 280;
+
+    /* Primary: purple/violet */
+    --primary: 0.52 0.22 280;
+    --primary-foreground: 0.99 0 0;
+
+    /* Secondary: light violet-tinted gray */
+    --secondary: 0.95 0.01 280;
+    --secondary-foreground: 0.25 0.018 280;
+
+    /* Muted: light neutral */
+    --muted: 0.95 0.008 280;
+    --muted-foreground: 0.52 0.018 280;
+
+    /* Accent: warm orange for trending/status badges */
+    --accent: 0.72 0.18 55;
+    --accent-foreground: 0.18 0.018 265;
+
+    /* Destructive */
+    --destructive: 0.58 0.23 25;
+    --destructive-foreground: 0.99 0 0;
+
+    /* Borders */
+    --border: 0.90 0.012 280;
+    --input: 0.90 0.012 280;
+    --ring: 0.52 0.22 280;
+
+    /* Chart colors */
+    --chart-1: 0.58 0.18 35;
+    --chart-2: 0.65 0.16 150;
+    --chart-3: 0.55 0.2 260;
+    --chart-4: 0.72 0.18 55;
+    --chart-5: 0.62 0.2 310;
+
+    /* Sidebar */
+    --sidebar: 1 0 0;
+    --sidebar-foreground: 0.18 0.018 280;
+    --sidebar-primary: 0.52 0.22 280;
+    --sidebar-primary-foreground: 0.99 0 0;
+    --sidebar-accent: 0.95 0.01 280;
+    --sidebar-accent-foreground: 0.25 0.018 280;
+    --sidebar-border: 0.90 0.012 280;
+    --sidebar-ring: 0.52 0.22 280;
+
+    /* ── Category badge colors ───────────────────────────── */
+    --cat-art: 0.65 0.2 310;
+    --cat-music: 0.6 0.22 260;
+    --cat-food: 0.62 0.2 35;
+    --cat-crafts: 0.58 0.17 140;
+    --cat-wellness: 0.6 0.18 175;
+    --cat-fashion: 0.65 0.22 340;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "General Sans", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ─── Texture background overlay ─────────────────────────── */
+.texture-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+/* ─── Category badge color utilities ─────────────────────── */
+.badge-art {
+  background-color: oklch(var(--cat-art) / 0.15);
+  color: oklch(var(--cat-art));
+  border-color: oklch(var(--cat-art) / 0.3);
+}
+.badge-music {
+  background-color: oklch(var(--cat-music) / 0.15);
+  color: oklch(var(--cat-music));
+  border-color: oklch(var(--cat-music) / 0.3);
+}
+.badge-food {
+  background-color: oklch(var(--cat-food) / 0.15);
+  color: oklch(var(--cat-food));
+  border-color: oklch(var(--cat-food) / 0.3);
+}
+.badge-crafts {
+  background-color: oklch(var(--cat-crafts) / 0.15);
+  color: oklch(var(--cat-crafts));
+  border-color: oklch(var(--cat-crafts) / 0.3);
+}
+.badge-wellness {
+  background-color: oklch(var(--cat-wellness) / 0.15);
+  color: oklch(var(--cat-wellness));
+  border-color: oklch(var(--cat-wellness) / 0.3);
+}
+.badge-fashion {
+  background-color: oklch(var(--cat-fashion) / 0.15);
+  color: oklch(var(--cat-fashion));
+  border-color: oklch(var(--cat-fashion) / 0.3);
+}
