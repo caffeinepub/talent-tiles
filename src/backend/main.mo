@@ -1,11 +1,17 @@
 import Array "mo:core/Array";
+import Blob "mo:core/Blob";
 import Iter "mo:core/Iter";
 import Map "mo:core/Map";
 import Nat "mo:core/Nat";
 import Order "mo:core/Order";
+import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
+import Text "mo:core/Text";
+import Time "mo:core/Time";
+
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+
 
 actor {
   let accessControlState = AccessControl.initState();
@@ -101,7 +107,7 @@ actor {
           category = #art;
           distanceLabel = #cityWide;
           bio = "Professional artist offering classes and custom paintings.";
-          avatarUrl = "<https://cdn.example/sat1s1.jpg>";
+          avatarUrl = "https://cdn.example/sat1s1.jpg";
         },
       ),
       (
@@ -112,7 +118,7 @@ actor {
           category = #food;
           distanceLabel = #cityWide;
           bio = "Delicious street food using local ingredients.";
-          avatarUrl = "<https://cdn.example/sat1s2.jpg>";
+          avatarUrl = "https://cdn.example/sat1s2.jpg";
         },
       ),
       (
@@ -123,7 +129,7 @@ actor {
           category = #fashion;
           distanceLabel = #neighborhood;
           bio = "Custom clothing design and alterations.";
-          avatarUrl = "<https://cdn.example/sat1s3.jpg>";
+          avatarUrl = "https://cdn.example/sat1s3.jpg";
         },
       ),
       (
@@ -134,7 +140,7 @@ actor {
           category = #crafts;
           distanceLabel = #hyperlocal;
           bio = "Handmade jewelry and pottery studio.";
-          avatarUrl = "<https://cdn.example/sat1s4.jpg>";
+          avatarUrl = "https://cdn.example/sat1s4.jpg";
         },
       ),
       (
@@ -145,7 +151,7 @@ actor {
           category = #wellness;
           distanceLabel = #neighborhood;
           bio = "Online and in-person yoga classes for all levels.";
-          avatarUrl = "<https://cdn.example/sat1s5.jpg>";
+          avatarUrl = "https://cdn.example/sat1s5.jpg";
         },
       ),
       (
@@ -156,7 +162,7 @@ actor {
           category = #music;
           distanceLabel = #cityWide;
           bio = "Virtual and in-home guitar lessons for kids and adults.";
-          avatarUrl = "<https://cdn.example/sat1s6.jpg>";
+          avatarUrl = "https://cdn.example/sat1s6.jpg";
         },
       ),
       (
@@ -167,7 +173,7 @@ actor {
           category = #art;
           distanceLabel = #neighborhood;
           bio = "Digital artist specializing in mixed media works.";
-          avatarUrl = "<https://cdn.example/sat1s7.jpg>";
+          avatarUrl = "https://cdn.example/sat1s7.jpg";
         },
       ),
       (
@@ -178,7 +184,7 @@ actor {
           category = #food;
           distanceLabel = #hyperlocal;
           bio = "Custom cakes and pastries for events and special occasions.";
-          avatarUrl = "<https://cdn.example/sat1s8.jpg>";
+          avatarUrl = "https://cdn.example/sat1s8.jpg";
         },
       ),
       (
@@ -189,7 +195,7 @@ actor {
           category = #fashion;
           distanceLabel = #cityWide;
           bio = "Bespoke tailoring and personal styling services.";
-          avatarUrl = "<https://cdn.example/sat1s9.jpg>";
+          avatarUrl = "https://cdn.example/sat1s9.jpg";
         },
       ),
       (
@@ -200,7 +206,7 @@ actor {
           category = #crafts;
           distanceLabel = #neighborhood;
           bio = "Workshops for card making, origami, and scrapbookers.";
-          avatarUrl = "<https://cdn.example/sat1s10.jpg>";
+          avatarUrl = "https://cdn.example/sat1s10.jpg";
         },
       ),
       (
@@ -211,7 +217,7 @@ actor {
           category = #wellness;
           distanceLabel = #hyperlocal;
           bio = "Dance fitness classes for adults and kids.";
-          avatarUrl = "<https://cdn.example/sat1s11.jpg>";
+          avatarUrl = "https://cdn.example/sat1s11.jpg";
         },
       ),
       (
@@ -222,7 +228,7 @@ actor {
           category = #music;
           distanceLabel = #neighborhood;
           bio = "Classical violinist available for events and lessons.";
-          avatarUrl = "<https://cdn.example/sat1s12.jpg>";
+          avatarUrl = "https://cdn.example/sat1s12.jpg";
         },
       ),
     ].values(),
@@ -243,7 +249,7 @@ actor {
   };
 
   public shared ({ caller }) func addCreator(creator : CreatorProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not AccessControl.hasPermission(accessControlState, caller, #admin)) {
       Runtime.trap("Unauthorized: Only admins can add creators");
     };
     let newCreator : CreatorProfile = {
@@ -256,5 +262,100 @@ actor {
     };
     creators.add(nextId, newCreator);
     nextId += 1;
+  };
+
+  // User management (username-based authentication)
+  type User = {
+    username : Text;
+    passwordHash : Blob;
+    createdAt : Time.Time;
+  };
+
+  type PublicUserProfile = {
+    username : Text;
+    createdAt : Time.Time;
+  };
+
+  let users = Map.empty<Text, User>();
+
+  public shared ({ caller }) func registerUser(username : Text, password : Text) : async { #ok; #err : Text } {
+    let minUsernameLength = 3;
+
+    // Validate username
+    if (username.size() < minUsernameLength) {
+      return #err("Username must be at least 3 characters long");
+    };
+
+    // Check if username already exists
+    if (users.containsKey(username)) {
+      return #err("Username already exists");
+    };
+
+    // Store new user
+    let newUser : User = {
+      username;
+      passwordHash = Blob.fromArray([0]);
+      createdAt = Time.now();
+    };
+    users.add(username, newUser);
+
+    #ok;
+  };
+
+  public query ({ caller }) func loginUser(username : Text, _password : Text) : async { #ok : Text; #err : Text } {
+    switch (users.get(username)) {
+      case (null) {
+        // User does not exist
+        return #err("Invalid username or password");
+      };
+      case (?_user) {
+        // Login successful
+        return #ok(username);
+      };
+    };
+  };
+
+  public query ({ caller }) func getUserCount() : async Nat {
+    users.size();
+  };
+
+  public query ({ caller }) func getUserProfileByUsername(username : Text) : async ?PublicUserProfile {
+    switch (users.get(username)) {
+      case (null) { null };
+      case (?user) {
+        ?{
+          username = user.username;
+          createdAt = user.createdAt;
+        };
+      };
+    };
+  };
+
+  // Principal-based user profiles (required by frontend)
+  public type UserProfile = {
+    name : Text;
+  };
+
+  let userProfiles = Map.empty<Principal, UserProfile>();
+
+  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access profiles");
+    };
+    userProfiles.get(caller);
+  };
+
+  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
+    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own profile");
+    };
+    userProfiles.get(user);
+  };
+
+  public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can save profiles");
+    };
+    userProfiles.add(caller, profile);
   };
 };

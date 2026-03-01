@@ -14,3 +14,16 @@ export function useGetAllCreators() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
+
+export function useGetUserCount() {
+  const { actor, isFetching } = useActor();
+  return useQuery<bigint>({
+    queryKey: ["userCount"],
+    queryFn: async () => {
+      if (!actor) return BigInt(0);
+      return actor.getUserCount();
+    },
+    enabled: !!actor && !isFetching,
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
+}

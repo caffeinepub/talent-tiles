@@ -9,6 +9,7 @@ export interface ExtendedCreatorProfile extends CreatorProfile {
   photoUrl: string;
   statusBadge?: "Work in Progress" | "Upcoming Drop" | "New" | null;
   isTrending?: boolean;
+  title?: string;
 }
 
 export const sampleCreators: ExtendedCreatorProfile[] = [
@@ -26,6 +27,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     photoUrl: "/assets/uploads/image-1.png",
     statusBadge: "Work in Progress",
     isTrending: true,
+    title: "Studio session – abstract series",
   },
   {
     id: BigInt(2),
@@ -40,6 +42,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     bookmarks: 140,
     photoUrl: "https://picsum.photos/seed/music1/600/400",
     isTrending: true,
+    title: "Afrobeat jazz – live improv session",
   },
   {
     id: BigInt(3),
@@ -54,6 +57,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     bookmarks: 312,
     photoUrl: "https://picsum.photos/seed/food1/600/400",
     statusBadge: "Upcoming Drop",
+    title: "Fermentation workshop – small batch",
   },
   {
     id: BigInt(4),
@@ -68,6 +72,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     bookmarks: 445,
     photoUrl: "/assets/uploads/image-1-2.png",
     isTrending: true,
+    title: "Upcycled streetwear – new collection",
   },
   {
     id: BigInt(5),
@@ -82,6 +87,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     bookmarks: 92,
     photoUrl: "https://picsum.photos/seed/crafts1/600/400",
     statusBadge: "New",
+    title: "Heirloom woodwork – open studio",
   },
   {
     id: BigInt(6),
@@ -95,6 +101,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     views: 2640,
     bookmarks: 178,
     photoUrl: "https://picsum.photos/seed/wellness1/600/400",
+    title: "Dawn meditation – forest bathing",
   },
   {
     id: BigInt(7),
@@ -109,6 +116,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     bookmarks: 389,
     photoUrl: "https://picsum.photos/seed/art2/600/400",
     statusBadge: "Upcoming Drop",
+    title: "Parametric sculpture – public art",
   },
   {
     id: BigInt(8),
@@ -122,6 +130,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     views: 3910,
     bookmarks: 261,
     photoUrl: "https://picsum.photos/seed/music2/600/400",
+    title: "West African kora – deep house set",
   },
   {
     id: BigInt(9),
@@ -135,6 +144,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     views: 7820,
     bookmarks: 534,
     photoUrl: "https://picsum.photos/seed/food2/600/400",
+    title: "Supper club – Peruvian-Japanese fusion",
   },
   {
     id: BigInt(10),
@@ -148,6 +158,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     views: 2180,
     bookmarks: 143,
     photoUrl: "https://picsum.photos/seed/crafts2/600/400",
+    title: "Botanical ceramics – wildflower series",
   },
   {
     id: BigInt(11),
@@ -161,6 +172,7 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     views: 1560,
     bookmarks: 87,
     photoUrl: "https://picsum.photos/seed/wellness2/600/400",
+    title: "Somatic movement – healing sessions",
   },
   {
     id: BigInt(12),
@@ -175,5 +187,6 @@ export const sampleCreators: ExtendedCreatorProfile[] = [
     bookmarks: 298,
     photoUrl: "https://picsum.photos/seed/fashion2/600/400",
     statusBadge: "New",
+    title: "Natural dye textiles – kimono art",
   },
 ];

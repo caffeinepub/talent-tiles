@@ -94,6 +94,7 @@ export default function DashboardPage() {
             `https://picsum.photos/seed/${c.id.toString()}/600/400`,
           statusBadge: sample?.statusBadge,
           isTrending: sample?.isTrending,
+          title: sample?.title,
         };
       });
     }
@@ -253,7 +254,7 @@ export default function DashboardPage() {
 
         {/* ── Grid ─────────────────────────────────────────────── */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {(["s1", "s2", "s3", "s4", "s5", "s6"] as const).map((k) => (
               <CreatorTileSkeleton key={k} />
             ))}
@@ -293,7 +294,7 @@ export default function DashboardPage() {
             ) : (
               <motion.div
                 key="grid"
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

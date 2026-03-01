@@ -18,6 +18,8 @@ export interface CreatorProfile {
   'avatarUrl' : string,
   'category' : Type__1,
 }
+export interface PublicUserProfile { 'username' : string, 'createdAt' : Time }
+export type Time = bigint;
 export type Type = { 'neighborhood' : null } |
   { 'hyperlocal' : null } |
   { 'cityWide' : null };
@@ -27,6 +29,7 @@ export type Type__1 = { 'art' : null } |
   { 'crafts' : null } |
   { 'wellness' : null } |
   { 'fashion' : null };
+export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
@@ -35,10 +38,25 @@ export interface _SERVICE {
   'addCreator' : ActorMethod<[CreatorProfile], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'getAllCreators' : ActorMethod<[], Array<CreatorProfile>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCreatorsByCategory' : ActorMethod<[Type__1], Array<CreatorProfile>>,
   'getCreatorsByDistanceLabel' : ActorMethod<[Type], Array<CreatorProfile>>,
+  'getUserCount' : ActorMethod<[], bigint>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getUserProfileByUsername' : ActorMethod<[string], [] | [PublicUserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'loginUser' : ActorMethod<
+    [string, string],
+    { 'ok' : string } |
+      { 'err' : string }
+  >,
+  'registerUser' : ActorMethod<
+    [string, string],
+    { 'ok' : null } |
+      { 'err' : string }
+  >,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

@@ -7,14 +7,13 @@ import {
   useState,
 } from "react";
 import type { ReactNode } from "react";
+import { createActorWithConfig } from "../config";
 
 // ── Storage keys ──────────────────────────────────────────────
 const STORAGE_KEY_AUTH = "tt_auth";
-const STORAGE_KEY_USERS = "tt_users";
 
 // ── Types ─────────────────────────────────────────────────────
 type StoredAuth = { username: string };
-type UsersStore = Record<string, string>; // username → password (plain text for demo)
 
 type AuthContextType = {
   isLoggedIn: boolean;
@@ -34,20 +33,6 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // ── Helpers ───────────────────────────────────────────────────
-function getUsers(): UsersStore {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_USERS);
-    if (!raw) return {};
-    return JSON.parse(raw) as UsersStore;
-  } catch {
-    return {};
-  }
-}
-
-function saveUsers(users: UsersStore): void {
-  localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
-}
-
 function getStoredAuth(): StoredAuth | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_AUTH);
@@ -63,19 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
 
-  // Restore session on mount
+  // Restore session on mount (just restore from localStorage — no backend verify needed on load)
   useEffect(() => {
     const stored = getStoredAuth();
     if (stored?.username) {
-      // Verify the user still exists
-      const users = getUsers();
-      if (stored.username in users) {
-        setIsLoggedIn(true);
-        setUsername(stored.username);
-      } else {
-        // User no longer exists, clean up stale session
-        localStorage.removeItem(STORAGE_KEY_AUTH);
-      }
+      setIsLoggedIn(true);
+      setUsername(stored.username);
     }
   }, []);
 
@@ -89,19 +67,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, error: "Username and password are required." };
       }
 
-      const users = getUsers();
-      const storedPassword = users[trimmed];
+      try {
+        // Use anonymous actor (no identity needed for login)
+        const actor = await createActorWithConfig();
+        const result = await actor.loginUser(trimmed, password);
 
-      if (storedPassword === undefined || storedPassword !== password) {
-        return { success: false, error: "Invalid username or password." };
+        if (result.__kind__ === "err") {
+          return { success: false, error: result.err };
+        }
+
+        // Persist session
+        const auth: StoredAuth = { username: trimmed };
+        localStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(auth));
+        setIsLoggedIn(true);
+        setUsername(trimmed);
+        return { success: true };
+      } catch (e) {
+        console.error("Login error:", e);
+        return {
+          success: false,
+          error: "Unable to connect to the server. Please try again.",
+        };
       }
-
-      // Persist session
-      const auth: StoredAuth = { username: trimmed };
-      localStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(auth));
-      setIsLoggedIn(true);
-      setUsername(trimmed);
-      return { success: true };
     },
     [],
   );
@@ -132,14 +119,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
 
-      const users = getUsers();
-      if (trimmed in users) {
-        return { success: false, error: "Username already taken." };
-      }
+      try {
+        // Use anonymous actor (no identity needed for registration)
+        const actor = await createActorWithConfig();
+        const result = await actor.registerUser(trimmed, password);
 
-      users[trimmed] = password;
-      saveUsers(users);
-      return { success: true };
+        if (result.__kind__ === "err") {
+          return { success: false, error: result.err };
+        }
+
+        return { success: true };
+      } catch (e) {
+        console.error("Register error:", e);
+        return {
+          success: false,
+          error: "Unable to connect to the server. Please try again.",
+        };
+      }
     },
     [],
   );

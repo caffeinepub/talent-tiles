@@ -1,40 +1,48 @@
 # Talent Tiles
 
 ## Current State
-- React + Motoko full-stack app on ICP
-- Auth: Internet Identity (no username/password)
-- LoginPage shows an "Login with Internet Identity" button
-- DashboardPage is rendered after II login
-- App.tsx routes based on `identity` from `useInternetIdentity`
-- Backend: stores CreatorProfiles with 12 sample entries; uses authorization mixin
-- No Register page exists
-- No username/password system exists
+- Full-stack app with Motoko backend + React frontend
+- Authentication flow: Login -> Register -> Dashboard (protected)
+- Dashboard has sticky nav, distance/category filters, and a responsive grid of `CreatorTile` cards
+- `CreatorTile` shows: photo section (cover image + distance badge + status badge), then below: avatar, name, neighborhood, view/bookmark counts
+- Grid is 1 col mobile, 2 col sm/lg, 3 col xl
 
 ## Requested Changes (Diff)
 
 ### Add
-- Backend: `registerUser(username, password)` -- stores hashed credentials per principal, returns success/error
-- Backend: `loginUser(username, password)` -- validates credentials, returns session token / success flag
-- Backend: `logoutUser()` -- invalidates session
-- Frontend: `AuthContext` (React context acting as AuthService) -- holds auth state (isLoggedIn, username), exposes login/register/logout functions
-- Frontend: `RegisterPage` -- form with username + password + confirm password fields; on success redirects to Login
-- Frontend: `LoginPage` (updated) -- username + password form; "Register" link below; on success redirects to Dashboard
-- Frontend: Route guard logic -- if not authenticated, redirect to Login; Dashboard only accessible when logged in
+- Category badge overlaid on the image (e.g. "Art", "Tech", "Music", "Fitness") — small pill near bottom-left of image, above the title
+- Title overlay text on the image (bold title derived from creator name/bio headline)
+- Contact and Share action buttons overlaid on the bottom of the image
+- Distance/location info ("2.1 km away") shown as a small pill overlaid on the image bottom-left (already exists, needs to be part of the new bottom bar alongside category + buttons)
+- Overlay gradient on the image (dark gradient from bottom to top so text is readable)
+- Hover effect: card lifts with shadow, image scales slightly (already partial, needs polish)
 
 ### Modify
-- `LoginPage.tsx` -- replace Internet Identity button with username/password form; keep purple branding and hero panel
-- `App.tsx` -- replace II-based routing with AuthContext-based routing; add route for `/register`; protect `/dashboard`
-- Backend `main.mo` -- add user credentials storage and auth functions alongside existing creator data
+- `CreatorTile` component — redesigned to match the reference screenshot:
+  - Large cover image with bottom dark gradient overlay
+  - On the image overlay (bottom area, left-to-right):
+    - Distance pill ("2.1km away" with pin icon) — bottom left
+    - Category badge ("Art") — just above or next to distance
+    - Title text (bold, white) just above category/distance area
+    - "Process" / "Trusted" style status badges top-right (keep existing statusBadge)
+    - Contact + Share buttons bottom-right area
+  - Below image: white card area with avatar, name, location, view+like stats
+- Grid breakpoints: 1 col mobile, 2 col tablet (sm), 3 col desktop (lg) — fix current xl-only 3-col to be lg
+- Card visual: rounded-2xl, shadow, clean white background below image
 
 ### Remove
-- Direct usage of `useInternetIdentity` for auth routing in `App.tsx` (keep the hook file for potential future use)
-- Internet Identity login button from the login form UI
+- Nothing removed; existing filters and nav remain intact
 
 ## Implementation Plan
-1. Update `main.mo` to add username/password auth: store user records (username + hashed password), `registerUser`, `loginUser`, `logoutUser`, `isAuthenticated` query
-2. Regenerate backend bindings (`backend.d.ts`) via `generate_motoko_code`
-3. Create `src/frontend/src/context/AuthContext.tsx` -- React context with `login(username, password)`, `register(username, password)`, `logout()`, `isLoggedIn`, `username` state; uses backend calls
-4. Create `src/frontend/src/pages/RegisterPage.tsx` -- form page with username/password/confirm fields, calls `AuthContext.register`, redirects to login on success
-5. Update `src/frontend/src/pages/LoginPage.tsx` -- replace II button with username + password form, add "Register" link, call `AuthContext.login`, redirect to dashboard on success
-6. Update `src/frontend/src/App.tsx` -- wrap with `AuthProvider`, implement route logic: unauthenticated → LoginPage, `/register` → RegisterPage, authenticated → DashboardPage (protected)
-7. Update `DashboardPage.tsx` -- use `AuthContext` for logout and display username instead of principal
+1. Update `CreatorTile.tsx`:
+   - Add dark bottom-to-top gradient overlay on image
+   - Add title text overlay (use creator name as title or a crafted event/session title)
+   - Add category badge overlay on image (pill, small, near title)
+   - Add Contact + Share button row overlaid on image bottom
+   - Distance pill stays bottom-left on image
+   - Status badges (Process/Trusted style) stay top-right on image
+   - Below image: keep avatar, name, neighborhood, add views + heart/like icon for stats
+2. Update `ExtendedCreatorProfile` in `sampleCreators.ts` to add a `title` field (event/work title shown as image overlay)
+3. Update `sampleCreators.ts` to add titles for all 12 creators (e.g. "Studio session – abstract series")
+4. Fix grid columns in `DashboardPage.tsx`: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`
+5. Ensure hover effect: card `y: -4` lift + shadow intensify + image scale (framer motion + tailwind)
